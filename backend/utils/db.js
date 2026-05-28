@@ -3,24 +3,24 @@ import pkg from 'pg';
 
 dotenv.config();
 
-const { pool, types } = pkg;
+const { Pool, types } = pkg;
 
-// Override the default parser for numeric types to return strings
-types.setTypeParser(1082, (val) => val);
+// Parse numeric values as floats instead of strings
+types.setTypeParser(1082, (val) => val); // Date
 
-const pool = new pool({
+const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false,
-    },  
+    },
 });
 
-pool.on("connect", () => {
-    console.log("Connected to Neon Postgress");
+pool.on('connect', () => {
+    console.log('Connected to Neon Postgres');
 });
 
-pool.on("error", (err) => {
-    console.error("Unexpected Postgress error:", err);
+pool.on('error', (err) => {
+    console.error('Unexpected Postgres error:', err);
     process.exit(-1);
 });
 
