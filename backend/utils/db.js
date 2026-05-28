@@ -10,9 +10,7 @@ types.setTypeParser(1082, (val) => val); // Date
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false,
-    },
+    ssl: useSsl ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('connect', () => {

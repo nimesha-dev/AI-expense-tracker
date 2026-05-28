@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import pool from '../db.js';
+import pool from '../utils/db.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -22,21 +22,21 @@ const DROP_ALL = `
 
     try {
         if (shouldReset) {
-            console.log('Dropping exisiting tables......');
+            console.log('Dropping existing tables...');
             await pool.query(DROP_ALL);
         }
 
-        console.log('Reading schema from ${schemaPath}');
+        console.log(`Reading schema from ${schemaPath}`);
         const schema = await fs.readFile(schemaPath, 'utf-8');
 
-        console.log('Running migration.....');
-        await pool.guery(schema);
+        console.log('Running migration...');
+        await pool.query(schema);
 
-        console.log('Migration complete. Table created');
-    } catch(error) {
-        console.error('Migration Failed:', error.message);
+        console.log('Migration complete. Tables created.');
+    } catch (error) {
+        console.error('Migration Failed:', error.message || error);
         process.exitCode = 1;
-    }  finally {
+    } finally {
         await pool.end();
     }
 };

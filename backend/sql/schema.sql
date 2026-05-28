@@ -1,4 +1,4 @@
-//--AI Expense Tracker - PostgreSQL Schema
+-- AI Expense Tracker - PostgreSQL Schema
 
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
@@ -6,10 +6,10 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     currency VARCHAR(3) DEFAULT 'USD',
-    created_at TIMESTAMPTZ DEFAULT NOW(),
+    created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE TABLE Categories (
+CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name VARCHAR(50) NOT NULL,
@@ -18,14 +18,13 @@ CREATE TABLE Categories (
     color VARCHAR(7),
     is_default BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE (user_id, name, type)  
+    UNIQUE (user_id, name, type)
 );
-
 
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    category_id INT REFERENCES Categories(id) ON DELETE SET NULL,
+    category_id INT REFERENCES categories(id) ON DELETE SET NULL,
     amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
     type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
     description VARCHAR(255),
@@ -34,22 +33,19 @@ CREATE TABLE transactions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
 CREATE INDEX idx_transactions_user_date ON transactions(user_id, transaction_date);
 CREATE INDEX idx_transactions_user_category ON transactions(category_id);
-
 
 CREATE TABLE budgets (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    category_id INT NOT NULL REFERENCES Categories(id) ON DELETE CASCADE
+    category_id INT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
     amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
     period VARCHAR(10) NOT NULL DEFAULT 'monthly' CHECK (period IN ('monthly', 'weekly')),
     start_date DATE NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE (user_id, category_id, period)
 );
-
 
 CREATE TABLE ai_insights (
     id SERIAL PRIMARY KEY,
@@ -61,5 +57,4 @@ CREATE TABLE ai_insights (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
-CREATE INDEX idx_insights_user_created ON ai_insights(user_id, created_at DESC
+CREATE INDEX idx_insights_user_created ON ai_insights(user_id, created_at DESC);
