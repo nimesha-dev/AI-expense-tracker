@@ -1,0 +1,24 @@
+# Node
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# Build outputs
+/dist/
+/build/
+
+# Frontend build artifacts
+frontend/ai-expense-tracker-ui/dist/
+frontend/ai-expense-tracker-ui/dist-ssr/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
