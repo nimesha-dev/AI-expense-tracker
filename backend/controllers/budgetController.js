@@ -4,7 +4,7 @@ export const getBudgets = async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT 
-                b.Id,
+                b.id,
                 b.category_id,
                 b.amount,
                 b.period,
@@ -18,12 +18,14 @@ export const getBudgets = async (req, res) => {
                 ON t.category_id = b.category_id
                 AND t.user_id = b.user_id
                 AND t.type = 'expense'
-                AND {
-                    (b.period = 'monthly' AND t.transaction_date >= date_trucnc('month', CURRENT_DATE))
-                    OR
-                    (b.period = 'weekly' AND t.transaction_date >= date_trunc('week', CURRENT_DATE))
-            }
-
+                AND CASE 
+                    WHEN b.period = 'monthly' 
+                    THEN t.transaction_date >= DATE_TRUNC('month', b.start_date::timestamp)
+                         AND t.transaction_date < DATE_TRUNC('month', b.start_date::timestamp) + INTERVAL '1 month'
+                    WHEN b.period = 'weekly'
+                    THEN t.transaction_date >= DATE_TRUNC('week', b.start_date::timestamp)
+                         AND t.transaction_date < DATE_TRUNC('week', b.start_date::timestamp) + INTERVAL '1 week'
+                END
             WHERE b.user_id = $1
             GROUP BY b.id, c.name, c.icon, c.color
             ORDER BY c.name`,
