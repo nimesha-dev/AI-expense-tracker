@@ -25,7 +25,7 @@ CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category_id INT REFERENCES categories(id) ON DELETE SET NULL,
-    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
+    amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     type VARCHAR(10) NOT NULL CHECK (type IN ('income', 'expense')),
     description VARCHAR(255),
     notes TEXT,
@@ -33,14 +33,14 @@ CREATE TABLE transactions (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-CREATE INDEX idx_transactions_user_date ON transactions(user_id, transaction_date);
-CREATE INDEX idx_transactions_user_category ON transactions(category_id);
+CREATE INDEX idx__user_date ON transactions(user_id, transaction_date DESC);
+CREATE INDEX idx_category ON transactions(category_id);
 
 CREATE TABLE budgets (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     category_id INT NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
+    amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     period VARCHAR(10) NOT NULL DEFAULT 'monthly' CHECK (period IN ('monthly', 'weekly')),
     start_date DATE NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW(),

@@ -38,11 +38,13 @@ export const register = async (req, res) => {
         const user = userResult.rows[0];
 
         // Insert default categories for the new user
-        const insertCategoryText = `INSERT INTO categories (user_id, name, type, icon, color, is_default)
-            VALUES ($1, $2, $3, $4, $5, true)`;
-
         for (const cat of defaultCategories) {
-            await client.query(insertCategoryText, [user.id, cat.name, cat.type, cat.icon || null, cat.color || null]);
+            await client.query(
+                `INSERT INTO categories (user_id, name, type, icon, color, is_default)
+                VALUES ($1, $2, $3, $4, $5, true)`,
+                [user.id, cat.name, cat.type, cat.icon, cat.color]
+            );
+            
         }
 
         await client.query('COMMIT');

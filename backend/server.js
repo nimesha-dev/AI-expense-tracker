@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import authRoutes from './routes/authRoutes.js';
 
 dotenv.config();
 
@@ -14,8 +15,15 @@ app.get("/", (req, res) => {
     res.json({ message: "AI Expense Tracker API is running"});
 });
 
+app.use('/api/auth', authRoutes);
+
+
 app.listen(PORT, () => {
     console.log(`Severver running on port ${PORT}`);
 });
 
 //npm run migrate - create the database table according to the schemas
+
+//---RUN ---//
+//cd backend, npm run dev
+//cd backend, npm run migrate - create database tables

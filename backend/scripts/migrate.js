@@ -34,7 +34,7 @@ const DROP_ALL = `
 
         console.log('Migration complete. Tables created.');
     } catch (error) {
-        console.error('Migration Failed:', error.message || error);
+        console.error('Migration Failed:', error.message);
         process.exitCode = 1;
     } finally {
         await pool.end();
