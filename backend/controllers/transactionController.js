@@ -1,4 +1,4 @@
-import pool from '../db.js';
+import pool from '../utils/db.js';
 
 export const getTransactions = async (req, res) => {
     const { startDate, endDate, categoryId, type, search, limit = 50, offset = 0 } = req.query;
@@ -7,13 +7,13 @@ export const getTransactions = async (req, res) => {
     const values = [req.userId];
     let idx = 2;
 
-    if (StartDate) {
+    if (startDate) {
         conditions.push(`t.transaction_date >= $${idx++}` );
         values.push(startDate);
     }
 
     if(endDate) {
-        conditions.push(`t.transation_date <= $${idx++}`);
+        conditions.push(`t.transaction_date <= $${idx++}`);
         values.push(endDate);
     }
 
@@ -58,7 +58,7 @@ export const getTransactions = async (req, res) => {
 
 
 export const createTransaction = async (req, res) => {
-    const { categoryId, amount, type, description, notes, transactionDate }
+    const { categoryId, amount, type, description, notes, transactionDate } = req.body;
 
     if (!amount || !type || !transactionDate) {
         return res.status(400).json({ message: 'Amount, type, and transactionDate are required' });
@@ -136,6 +136,26 @@ export const updateTransaction = async (req, res) => {
         res.json(result.rows[0]);
     } catch (error) {
         console.error('UpdateTransaction error:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+export const deleteTransaction = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query(
+            `DELETE FROM transactions WHERE id = $1 AND user_id = $2 RETURNING *`,
+            [id, req.userId]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: 'Transaction not found' });
+        }
+
+        res.json({ message: 'Transaction deleted', transaction: result.rows[0] });
+    } catch (error) {
+        console.error('DeleteTransaction error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
