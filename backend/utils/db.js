@@ -17,7 +17,7 @@ const { Pool, types } = pkg;
 // Parse numeric values as floats instead of strings
 types.setTypeParser(1082, (val) => val); // Date
 
-const useSsl = process.env.NODE_ENV === 'production';
+const useSsl = process.env.NODE_ENV === 'production' || process.env.DATABASE_URL?.includes('sslmode=require');
 
 const poolConfig = {
     connectionString: process.env.DATABASE_URL,
